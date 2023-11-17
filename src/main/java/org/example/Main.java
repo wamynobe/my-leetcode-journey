@@ -8,7 +8,10 @@ public class Main {
         Solution s = new Solution();
 //        System.out.println(s.minIncrementOperations(new int[]{43,31,14,4}, 73));
 
-        System.out.println(Arrays.toString(s.dailyTemperatures(new int[]{73, 74, 75, 71, 69, 72, 76, 73})));
+        System.out.println(s.checkInclusion("adc", "dcda"));
+        System.out.println(s.checkInclusion("ab", "eidboaoo"));
+        System.out.println(s.checkInclusion("ab", "eidbaooo"));
+
 //        System.out.println(s.validPath());
 
     }
@@ -84,22 +87,137 @@ public class Main {
 //    }
 //}
 
+
+// O(N) solution
 class Solution {
-    public int[] dailyTemperatures(int[] temperatures) {
-        int l = temperatures.length;
-        int[] res = new int[l];
-        Stack<Integer> s = new Stack<>();
-        res[l-1] = 0;
-        for(int i =0; i < l;i++){
-            while(!s.empty() && temperatures[s.peek()] < temperatures[i]){
-                int pop = s.pop();
-                res[pop] = i -  pop;
-            }
-            s.add(i);
+    public boolean checkInclusion(String s1, String s2) {
+        if(s1.length() > s2.length()){
+            return false;
         }
-        return res;
+        HashMap<Character, Integer> hm = new HashMap<>();
+        int left = 0;
+        int right = s1.length()-1;
+
+        for(int i = 0; i <= right; i++){
+            hm.put(s1.charAt(i), hm.getOrDefault(s1.charAt(i), 0) + 1);
+            hm.put(s2.charAt(i), hm.getOrDefault(s2.charAt(i), 0) - 1);
+        }
+        while(left < s2.length() && right < s2.length()){
+            boolean isValid = true;
+            for(int num : hm.values()){
+                if (num != 0) {
+                    isValid = false;
+                    break;
+                }
+            }
+            if(isValid){
+                return true;
+            }
+            if(right-left < s1.length()-1){
+                right++;
+                hm.put(s2.charAt(right), hm.getOrDefault(s2.charAt(right), 0) - 1);
+                hm.put(s1.charAt(right%s1.length()), hm.getOrDefault(s1.charAt(right%s1.length()), 0) + 1);
+
+            }
+            else{
+                right++;
+                if(right < s2.length()){
+                    hm.put(s2.charAt(right), hm.getOrDefault(s2.charAt(right), 0) - 1);
+                }
+                hm.put(s2.charAt(left), hm.getOrDefault(s2.charAt(left), 0) + 1);
+                left++;
+            }
+
+
+
+        }
+        return false;
+
+
     }
 }
+
+// O(n2) solution
+//class Solution {
+//    public boolean checkInclusion(String s1, String s2) {
+//        if(s1.length() > s2.length()){
+//            return false;
+//        }
+//        for(int j = 0; j <= s2.length() - s1.length(); j++){
+//            HashMap<Character, Integer> hm = new HashMap<>();
+//            for(int i = j; i < j + s1.length(); i++){
+//                hm.put(s1.charAt(i%s1.length()), hm.getOrDefault(s1.charAt(i%s1.length()), 0) + 1);
+//                hm.put(s2.charAt(i), hm.getOrDefault(s2.charAt(i), 0) - 1);
+//                System.out.println(hm);
+//            }
+//            boolean isValid = true;
+//            for(int num : hm.values()){
+//                if (num != 0) {
+//                    isValid = false;
+//                    break;
+//                }
+//            }
+//            if(isValid){
+//                return true;
+//            }else{
+//                if(j == s2.length()-1){
+//                    return false;
+//                }
+//            }
+//
+//        }
+//        return false;
+//
+//
+//    }
+//}
+
+
+// ======================= leetcode ==========================
+//class Solution {
+//    public String findDifferentBinaryString(String[] nums) {
+//        StringBuilder sb = new StringBuilder();
+//        for(int i = 0; i < nums.length; i++){
+//            if(nums[i].charAt(i) == '0'){
+//                sb.append("1");
+//            }else{
+//                sb.append("0");
+//
+//            }
+//        }
+//        return sb.toString();
+//    }
+//}
+//class Solution {
+//    public String findDifferentBinaryString(String[] nums) {
+//        int max = (int) Math.pow(2, nums.length);
+//        Set<String> s = new HashSet<>(Arrays.asList(nums));
+//        for(int i = 0; i <= max; i++){
+//            String binary = String.format("%"+nums.length+"s", Integer.toBinaryString(i)).replace(' ', '0');
+//            if(s.add(binary)){
+//                return binary;
+//            }
+//        }
+//        return "";
+//    }
+//}
+// ================= Leetcode 739 ================
+//class Solution {
+//    public int[] dailyTemperatures(int[] temperatures) {
+//        int l = temperatures.length;
+//        int[] res = new int[l];
+//        Stack<Integer> s = new Stack<>();
+//        res[l-1] = 0;
+//        for(int i =0; i < l;i++){
+//            while(!s.empty() && temperatures[s.peek()] < temperatures[i]){
+//                int pop = s.pop();
+//                res[pop] = i -  pop;
+//            }
+//            s.add(i);
+//        }
+//        return res;
+//    }
+//}
 
 //=================== Leet code biweekly 117 Q2 ===================
 //class Solution {
