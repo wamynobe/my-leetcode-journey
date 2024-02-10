@@ -6,12 +6,35 @@ public class Main {
     public static void main(String[] args) {
 
         Solution s = new Solution();
+        List<List<Integer>> twoDArray = new ArrayList<>();
+
+        // Adding subarrays to the 2D list
+        twoDArray.add(Arrays.asList(1, 2, 3, 4, 5));
+        twoDArray.add(Arrays.asList(6, 7));
+        twoDArray.add(List.of(8));
+        twoDArray.add(Arrays.asList(9, 10, 11));
+        twoDArray.add(Arrays.asList(12, 13, 14, 15, 16));
+
+        List<List<Integer>> twoDArray2 = new ArrayList<>();
+
+        // Adding subarrays to the 2D list
+        twoDArray2.add(Arrays.asList(1, 2, 3));
+        twoDArray2.add(Arrays.asList(4, 5, 6));
+        twoDArray2.add(Arrays.asList(7, 8, 9));
+
 //        System.out.println(s.minIncrementOperations(new int[]{43,31,14,4}, 73));
+//        System.out.println(Arrays.toString(s.findDiagonalOrder(twoDArray)));
+//        System.out.println(Arrays.toString(s.findDiagonalOrder(twoDArray2)));
+//        System.out.println(Arrays.toString(s.findDiagonalOrder(List.of(List.of(6),List.of(8),List.of(6,1,6,16)))));
+//        System.out.println(Arrays.toString(s.findDiagonalOrder(List.of(List.of(1,2,3),List.of(4),List.of(5,6,7),List.of(8),List.of(9,10,11)))));
+//        System.out.println(Arrays.toString(s.findDiagonalOrder(List.of(List.of(1,2,3,4,5,6)))));
+            String inputStr = "gvgvvgv";
+            int kValue = 2;
+            List<String> resultSubstrings = Solution. findSubstringsWithKOccurrences(inputStr, kValue);
 
-        System.out.println(s.checkInclusion("adc", "dcda"));
-        System.out.println(s.checkInclusion("ab", "eidboaoo"));
-        System.out.println(s.checkInclusion("ab", "eidbaooo"));
-
+            for (String substring : resultSubstrings) {
+                System.out.println(substring);
+            }
 //        System.out.println(s.validPath());
 
     }
@@ -88,54 +111,207 @@ public class Main {
 //}
 
 
-// O(N) solution
-class Solution {
-    public boolean checkInclusion(String s1, String s2) {
-        if(s1.length() > s2.length()){
-            return false;
-        }
-        HashMap<Character, Integer> hm = new HashMap<>();
-        int left = 0;
-        int right = s1.length()-1;
+ class Solution {
 
-        for(int i = 0; i <= right; i++){
-            hm.put(s1.charAt(i), hm.getOrDefault(s1.charAt(i), 0) + 1);
-            hm.put(s2.charAt(i), hm.getOrDefault(s2.charAt(i), 0) - 1);
-        }
-        while(left < s2.length() && right < s2.length()){
-            boolean isValid = true;
-            for(int num : hm.values()){
-                if (num != 0) {
-                    isValid = false;
-                    break;
+     public static List<String> findSubstringsWithKOccurrences(String word, int k) {
+         List<String> result = new ArrayList<>();
+
+         for (int length = k; length <= word.length(); length++) {
+             int start = 0;
+             int end = 0;
+
+             Map<Character, Integer> charCount = new HashMap<>();
+
+             while (end < length) {
+                 char currentChar = word.charAt(end);
+                 charCount.put(currentChar, charCount.getOrDefault(currentChar, 0) + 1);
+                 end++;
+             }
+
+             if (allCharactersKOccurrences(charCount, k) && isValidSubString(word.substring(start, end))) {
+                 result.add(word.substring(start, end));
+             }
+
+             while (end < word.length()) {
+                 char startChar = word.charAt(start);
+                 charCount.put(startChar, charCount.get(startChar) - 1);
+                 if (charCount.get(startChar) == 0) {
+                     charCount.remove(startChar);
+                 }
+                 start++;
+
+                 char currentChar = word.charAt(end);
+                 charCount.put(currentChar, charCount.getOrDefault(currentChar, 0) + 1);
+                 end++;
+
+                 if (allCharactersKOccurrences(charCount, k) && isValidSubString(word.substring(start, end))) {
+                     result.add(word.substring(start, end));
+                 }
+             }
+         }
+
+
+         return result;
+     }
+
+     private static boolean allCharactersKOccurrences(Map<Character, Integer> charCount, int k) {
+         for (int count : charCount.values()) {
+             if (count != k) {
+                 return false;
+             }
+         }
+         return true;
+     }
+     private static boolean isValidSubString(String subString){
+         //if the difference between adjacent characters is at most 2 return true else false
+            for(int i = 0; i < subString.length()-1; i++){
+                if(Math.abs(subString.charAt(i) - subString.charAt(i+1)) > 2){
+                    return false;
                 }
             }
-            if(isValid){
-                return true;
-            }
-            if(right-left < s1.length()-1){
-                right++;
-                hm.put(s2.charAt(right), hm.getOrDefault(s2.charAt(right), 0) - 1);
-                hm.put(s1.charAt(right%s1.length()), hm.getOrDefault(s1.charAt(right%s1.length()), 0) + 1);
+            return true;
+     }
 
-            }
-            else{
-                right++;
-                if(right < s2.length()){
-                    hm.put(s2.charAt(right), hm.getOrDefault(s2.charAt(right), 0) - 1);
-                }
-                hm.put(s2.charAt(left), hm.getOrDefault(s2.charAt(left), 0) + 1);
-                left++;
-            }
-
-
-
-        }
-        return false;
-
-
-    }
 }
+
+
+//class Solution {
+//    public int[] findDiagonalOrder(List<List<Integer>> nums) {
+//        if(nums.size() < 2){
+//            return nums.get(0).stream().mapToInt(i -> i).toArray();
+//        }
+//        int count= 0;
+//        List<List<Integer>> lists = new ArrayList<>();
+//
+//        for(int i = 0 ; i < nums.size(); i++){
+//            List<Integer> row = nums.get(i);
+//            for(int j = 0; j < row.size(); j++){
+//                int idx = i + j;
+//                if(lists.size() <= idx){
+//                    lists.add(new ArrayList<>());
+//                }
+//                lists.get(idx).add(row.get(j));
+//                count++;
+//            }
+//        }
+//        int[] res = new int[count];
+//        int idx = 0;
+//        for(List<Integer> list : lists){
+//            for(int i = list.size()-1; i >= 0; i--){
+//                res[idx] = list.get(i);
+//                idx++;
+//            }
+//        }
+//
+//        return res;
+//    }
+//}
+//============== Leetcode 1814====================
+//class Solution {
+//    public int countNicePairs(int[] nums) {
+//        long mod = 1000000007;
+//        long count = 0;
+//        Map<Integer, Long> s = new HashMap<>();
+//        for (int num : nums) {
+//            int nr = num - rev(num);
+//            s.put(nr, s.getOrDefault(nr, (long) 0) + 1);
+//        }
+//
+//
+//        for(long num : s.values()){
+//            if(num > 1){
+//                count += ((num-1) * (num))/2;
+//            }
+//        }
+//
+//        return (int) (count % mod);
+//    }
+//
+//    private int rev (int num){
+//        int reverse = 0;
+//        while(num != 0){
+//            int remainder = num % 10;
+//            reverse = reverse * 10 + remainder;
+//            num = num/10;
+//        }
+//        return reverse;
+//    }
+//
+//}
+//class Solution {
+//    public int maxFrequency(int[] nums, int k) {
+//        Arrays.sort(nums);
+//        int res = 1;
+//        int l = 0;
+//        int r = 0;
+//        long currentSum = nums[r];
+//        while(l < nums.length && r < nums.length){
+//            long total =  ((long) nums[r] * ((r - l)+1));
+//            if(currentSum + k >= total){
+//                res = Math.max(res,((r - l)+1));
+//                r++;
+//                if(r < nums.length){
+//                    currentSum += nums[r];
+//                }
+//            }else{
+//                currentSum -= nums[l];
+//                l++;
+//            }
+//        }
+//        return res;
+//    }
+//}
+
+
+// =========================== leetcode =====================
+// O(N) solution
+//class Solution {
+//    public boolean checkInclusion(String s1, String s2) {
+//        if(s1.length() > s2.length()){
+//            return false;
+//        }
+//        HashMap<Character, Integer> hm = new HashMap<>();
+//        int left = 0;
+//        int right = s1.length()-1;
+//
+//        for(int i = 0; i <= right; i++){
+//            hm.put(s1.charAt(i), hm.getOrDefault(s1.charAt(i), 0) + 1);
+//            hm.put(s2.charAt(i), hm.getOrDefault(s2.charAt(i), 0) - 1);
+//        }
+//        while(left < s2.length() && right < s2.length()){
+//            boolean isValid = true;
+//            for(int num : hm.values()){
+//                if (num != 0) {
+//                    isValid = false;
+//                    break;
+//                }
+//            }
+//            if(isValid){
+//                return true;
+//            }
+//            if(right-left < s1.length()-1){
+//                right++;
+//                hm.put(s2.charAt(right), hm.getOrDefault(s2.charAt(right), 0) - 1);
+//                hm.put(s1.charAt(right%s1.length()), hm.getOrDefault(s1.charAt(right%s1.length()), 0) + 1);
+//
+//            }
+//            else{
+//                right++;
+//                if(right < s2.length()){
+//                    hm.put(s2.charAt(right), hm.getOrDefault(s2.charAt(right), 0) - 1);
+//                }
+//                hm.put(s2.charAt(left), hm.getOrDefault(s2.charAt(left), 0) + 1);
+//                left++;
+//            }
+//
+//
+//
+//        }
+//        return false;
+//
+//
+//    }
+//}
 
 // O(n2) solution
 //class Solution {
